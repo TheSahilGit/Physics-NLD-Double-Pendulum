@@ -15,8 +15,8 @@ t = 0'''
 
 l1 = 1.
 l2 = 1.
-m1 = 2.
-m2 = 2.
+m1 = 3.
+m2 = 3.
 
 g = 9.80
 
@@ -40,6 +40,7 @@ def f2(theta1, theta2, w1, w2):
 
 def f1(theta1, theta2, w1, w2):
     rad = float(np.pi / 180.)
+
     nu = -g * (2 * m1 + m2) * np.sin(rad * theta1) - m2 * g * np.sin(rad * (theta1 - 2 * theta2)) - 2 * np.sin(
         rad * (theta1 - theta2)) * m2 * (w2 * w2 * l2 + w1 * w1 * l1 * np.cos(rad * (theta1 - theta2)))
     de = l1 * (2 * m1 + m2 - m2 * np.cos(2 * rad * (theta1 - theta2)))
@@ -48,6 +49,7 @@ def f1(theta1, theta2, w1, w2):
 
 def f2(theta1, theta2, w1, w2):
     rad = float(np.pi / 180.)
+
     nu = 2 * np.sin(rad * (theta1 - theta2)) * (
             w1 * w1 * l1 * (m1 + m2) + g * (m1 + m2) * np.cos(rad * theta1) + w2 * w2 * l2 * m2 * np.cos(
         rad * (theta1 - theta2)))
@@ -140,12 +142,17 @@ def visual(theta1, theta2, w1, w2):
     scale = 100
 
     screen = pygame.display.set_mode((width, height))
+    surface = pygame.Surface((width, height))
+    surface.fill(white)
 
     def ball(x, y, r, color):
         pygame.draw.circle(screen, color, (int(x), int(y)), int(r))
 
     def line(x1, y1, x2, y2):
-        pygame.draw.line(screen, black, (x1, y1), (x2, y2),2)
+        pygame.draw.line(screen, black, (x1, y1), (x2, y2), 2)
+
+    def point(x, y, color):
+        pygame.draw.circle(surface, color, (int(x), int(y)), 2)
 
     theta1s, theta2s, w1s, w2s, time = EulerLoop(theta1, theta2, w1, w2)
 
@@ -156,10 +163,16 @@ def visual(theta1, theta2, w1, w2):
         x2 = x1 + l2 * np.sin(theta2s[j])
         y2 = y1 - l2 * np.cos(theta2s[j])
 
+        point(scale * x1 + xo, scale * y1 + yo, black)
+        point(scale * x2 + xo, scale * y2 + yo, red)
+        screen.blit(surface, (0, 0))
+
         ball(scale * x1 + xo, scale * y1 + yo, 10, black)
         ball(scale * x2 + xo, scale * y2 + yo, 10, red)
         line(xo, yo, scale * x1 + xo, scale * y1 + yo)
         line(scale * x1 + xo, scale * y1 + yo, scale * x2 + xo, scale * y2 + yo)
+
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -170,4 +183,5 @@ def visual(theta1, theta2, w1, w2):
         clock.tick(100)
 
 
-visual(0, 5, 0, 0)
+visual(2, 10, 0, 0)
+
