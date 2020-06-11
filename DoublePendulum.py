@@ -7,16 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pygame
 
-'''theta1 = 0
-theta2 = 0
-w1 = 0
-w2 = 0
-t = 0'''
-
 l1 = 1.
 l2 = 1.
 m1 = 3.
-m2 = 3.
+m2 = 2.
 
 g = 9.80
 
@@ -128,18 +122,24 @@ def plotLoop2(theta1, theta2, w1, w2):
 def visual(theta1, theta2, w1, w2):
     pygame.init()
 
-    width = 900
+    width = 1200
     height = 650
 
     black = (0, 0, 0)
     white = (255, 255, 255)
     red = (255, 0, 0)
+    red2 = (255, 80, 80)
+    black2 = (100, 100, 100)
+    green = (0, 255, 0)
+    blue = (0, 0, 255)
 
     clock = pygame.time.Clock()
 
-    xo = width / 2.
-    yo = height / 2.
     scale = 100
+    xo = (l1 + l2) * scale
+    yo = (l1 + l2) * scale
+
+    ballSizeScale = 4
 
     screen = pygame.display.set_mode((width, height))
     surface = pygame.Surface((width, height))
@@ -154,34 +154,39 @@ def visual(theta1, theta2, w1, w2):
     def point(x, y, color):
         pygame.draw.circle(surface, color, (int(x), int(y)), 2)
 
-    theta1s, theta2s, w1s, w2s, time = EulerLoop(theta1, theta2, w1, w2)
-
-    for j in range(len(time)):
+    while True:
+        theta1s, theta2s, w1s, w2s, time = EulerLoop(theta1, theta2, w1, w2)
         screen.fill(white)
-        x1 = l1 * np.sin(theta1s[j])
-        y1 = -l1 * np.cos((theta1s[j]))
-        x2 = x1 + l2 * np.sin(theta2s[j])
-        y2 = y1 - l2 * np.cos(theta2s[j])
+        for j in range(len(time)):
+            x1 = l1 * np.sin(theta1s[j])
+            y1 = -l1 * np.cos((theta1s[j]))
+            x2 = x1 + l2 * np.sin(theta2s[j])
+            y2 = y1 - l2 * np.cos(theta2s[j])
 
-        point(scale * x1 + xo, scale * y1 + yo, black)
-        point(scale * x2 + xo, scale * y2 + yo, red)
-        screen.blit(surface, (0, 0))
+            point(scale * x1 + xo, scale * y1 + yo, black2)
+            point(scale * x2 + xo, scale * y2 + yo, red2)
+            screen.blit(surface, (0, 0))
 
-        ball(scale * x1 + xo, scale * y1 + yo, 10, black)
-        ball(scale * x2 + xo, scale * y2 + yo, 10, red)
-        line(xo, yo, scale * x1 + xo, scale * y1 + yo)
-        line(scale * x1 + xo, scale * y1 + yo, scale * x2 + xo, scale * y2 + yo)
+            ball(scale * x1 + xo, scale * y1 + yo, ballSizeScale * m1,
+                 black)  # Scaling the ball size(i.e radius) according to the mass.
+            ball(scale * x2 + xo, scale * y2 + yo, ballSizeScale * m2, red)
+
+            line(xo, yo, scale * x1 + xo, scale * y1 + yo)
+            line(scale * x1 + xo, scale * y1 + yo, scale * x2 + xo, scale * y2 + yo)
+
+            point(20 * time[j] + width / 2. - 10, 20 * theta1s[j] + height / 7. + 10, red)
+            point(20 * time[j] + width / 2. - 10, 20 * theta2s[j] + height / 7. + 10, black)
+
+            point(20 * time[j] + width / 2 - 10, 20 * w1s[j] + height - 100, red)
+            point(20 * time[j] + width / 2. + 50, 20 * w2s[j] + height - 100, black)
+
+            pygame.display.update()
+            clock.tick(100)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
 
 
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-
-        pygame.display.update()
-        clock.tick(100)
-
-
-visual(2, 10, 0, 0)
-
+visual(3, 10, 0, 0)
