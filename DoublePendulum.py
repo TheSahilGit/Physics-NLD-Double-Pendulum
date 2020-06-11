@@ -9,45 +9,29 @@ import pygame
 
 l1 = 1.
 l2 = 1.
-m1 = 3.
+m1 = 2.
 m2 = 2.
 
 g = 9.80
 
-'''def f1(theta1, theta2, w1, w2):
-    rad = float(np.pi / 180.)
-    nu = m2 * g * np.cos(rad * (theta1 - theta2)) * np.sin(rad * (theta2)) + m2 * l1 * np.sin(rad * (
-            theta1 - theta2)) * w1 * w1 - m2 * l1 * np.cos(rad * (theta1 - theta2)) * np.sin(
-        rad * (theta1 - theta2)) * w2 * w2 - m2 * g * np.sin(rad * (theta2))
-    de = (m1 + m2) * l1 - m2 * l1 * np.cos(rad * (theta1 - theta2)) * np.cos(rad * (theta1 - theta2))
-    fo = float(nu / de)
-    return fo
-
-
-def f2(theta1, theta2, w1, w2):
-    rad = float(np.pi / 180.)
-    ft = float(l1 / l2) * np.sin(rad * (theta1 - theta2)) * w1 * w1 - float(g / l2) * np.sin(
-        rad * theta2) - float(l1 / l2) * np.cos(
-        rad * (theta1 - theta2)) * f1(theta1, theta2, w1, w2)
-    return ft'''
-
 
 def f1(theta1, theta2, w1, w2):
-    rad = float(np.pi / 180.)
-
-    nu = -g * (2 * m1 + m2) * np.sin(rad * theta1) - m2 * g * np.sin(rad * (theta1 - 2 * theta2)) - 2 * np.sin(
-        rad * (theta1 - theta2)) * m2 * (w2 * w2 * l2 + w1 * w1 * l1 * np.cos(rad * (theta1 - theta2)))
-    de = l1 * (2 * m1 + m2 - m2 * np.cos(2 * rad * (theta1 - theta2)))
+    nu1 = -g * (2 * m1 + m2) * np.sin(theta1)
+    nu2 = -m2 * g * np.sin(theta1 - 2 * theta2)
+    nu3 = -2 * np.sin(theta1 - theta2) * m2
+    nu4 = w2 * w2 * l2 + w1 * w1 * l1 * np.cos(theta1 - theta2)
+    de = l1 * (2 * m1 + m2 - m2 * np.cos(2 * theta1 - 2 * theta2))
+    nu = nu1 + nu2 + nu3 * nu4
     return float(nu / de)
 
 
 def f2(theta1, theta2, w1, w2):
-    rad = float(np.pi / 180.)
-
-    nu = 2 * np.sin(rad * (theta1 - theta2)) * (
-            w1 * w1 * l1 * (m1 + m2) + g * (m1 + m2) * np.cos(rad * theta1) + w2 * w2 * l2 * m2 * np.cos(
-        rad * (theta1 - theta2)))
-    de = l2 * (2 * m1 + m2 - m2 * np.cos(2 * rad * (theta1 - theta2)))
+    nu1 = 2 * np.sin(theta1 - theta2)
+    nu2 = w1 * w1 * l1 * (m1 + m2)
+    nu3 = g * (m1 + m2) * np.cos(theta1)
+    nu4 = w2 * w2 * l2 * m2 * np.cos(theta1 - theta2)
+    de = l2 * (2 * m1 + m2 - m2 * np.cos(2 * theta1 - 2 * theta2))
+    nu = nu1 * (nu2 + nu3 + nu4)
     return float(nu / de)
 
 
@@ -136,8 +120,8 @@ def visual(theta1, theta2, w1, w2):
     clock = pygame.time.Clock()
 
     scale = 100
-    xo = (l1 + l2) * scale
-    yo = (l1 + l2) * scale
+    xo = width / 2.
+    yo = height / 2.
 
     ballSizeScale = 4
 
@@ -159,9 +143,9 @@ def visual(theta1, theta2, w1, w2):
         screen.fill(white)
         for j in range(len(time)):
             x1 = l1 * np.sin(theta1s[j])
-            y1 = -l1 * np.cos((theta1s[j]))
+            y1 = l1 * np.cos((theta1s[j]))
             x2 = x1 + l2 * np.sin(theta2s[j])
-            y2 = y1 - l2 * np.cos(theta2s[j])
+            y2 = y1 + l2 * np.cos(theta2s[j])
 
             point(scale * x1 + xo, scale * y1 + yo, black2)
             point(scale * x2 + xo, scale * y2 + yo, red2)
@@ -174,11 +158,11 @@ def visual(theta1, theta2, w1, w2):
             line(xo, yo, scale * x1 + xo, scale * y1 + yo)
             line(scale * x1 + xo, scale * y1 + yo, scale * x2 + xo, scale * y2 + yo)
 
-            point(20 * time[j] + width / 2. - 10, 20 * theta1s[j] + height / 7. + 10, red)
+            '''point(20 * time[j] + width / 2. - 10, 20 * theta1s[j] + height / 7. + 10, red)
             point(20 * time[j] + width / 2. - 10, 20 * theta2s[j] + height / 7. + 10, black)
 
             point(20 * time[j] + width / 2 - 10, 20 * w1s[j] + height - 100, red)
-            point(20 * time[j] + width / 2. + 50, 20 * w2s[j] + height - 100, black)
+            point(20 * time[j] + width / 2. + 50, 20 * w2s[j] + height - 100, black)'''
 
             pygame.display.update()
             clock.tick(100)
@@ -189,4 +173,7 @@ def visual(theta1, theta2, w1, w2):
                     quit()
 
 
-visual(3, 10, 0, 0)
+a1 = 0
+a2 = 45
+rad = float(np.pi / 180.)
+visual(a1 * rad, a2 * rad, 0, 0)
